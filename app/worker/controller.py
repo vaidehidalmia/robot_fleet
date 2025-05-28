@@ -76,6 +76,7 @@ def reset_simulation_state():
 
     db: Session = SessionLocal()
     try:
+        # Reset robots
         robots = db.query(models.Robot).all()
         for robot in robots:
             robot.current_x = robot.start_x
@@ -83,9 +84,13 @@ def reset_simulation_state():
             robot.status = "idle"
             robot.battery_level = 100.0
 
-        tasks = db.query(models.Task).all()
-        for task in tasks:
-            task.complete = False
+        # Delete all "charge" tasks
+        db.query(models.Task).filter_by(task_type="charge").delete()
+
+        # Reset all other task completions
+        db.query(models.Task).filter(models.Task.task_type != "charge").update(
+            {models.Task.complete: False}, synchronize_session=False
+        )
 
         db.commit()
         update_simulation_status("not started")

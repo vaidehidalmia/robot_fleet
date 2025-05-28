@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey
+from datetime import datetime
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, DateTime
 from app.database import Base
 
 class Robot(Base):
@@ -21,3 +22,6 @@ class Task(Base):
     target_x = Column(Float)
     target_y = Column(Float)
     complete = Column(Boolean, default=False)
+    task_type = Column(String, default="normal")  # or: "charge", "pickup", etc.
+    priority = Column(Integer, default=1) # higher = more urgent
+    created_at = Column(DateTime, default=datetime.utcnow)
