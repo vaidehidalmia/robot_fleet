@@ -1,0 +1,6 @@
+STEP_SIZE = 1.0  # units per tick
+ARRIVAL_THRESHOLD = 0.5  # how close is “arrived”
+
+DRAIN_PER_UNIT = 1.0
+CHARGE_PER_TICK = 5.0
+LOW_BATTERY_THRESHOLD = 10.0

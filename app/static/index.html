@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Robot Grid Visualizer</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <h2>Robot Grid Simulation (100x100)</h2>
+  <canvas id="grid" width="600" height="600"></canvas>
+
+  <script>
+    const canvas = document.getElementById('grid');
+    const ctx = canvas.getContext('2d');
+
+    const GRID_SIZE = 100;
+    const CANVAS_SIZE = 600;
+    const SCALE = CANVAS_SIZE / GRID_SIZE;
+
+    function drawCircle(x, y, color, label = "") {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x * SCALE, y * SCALE, 5, 0, 2 * Math.PI);
+      ctx.fill();
+      if (label) {
+        ctx.font = "10px Arial";
+        ctx.fillStyle = "black";
+        ctx.fillText(label, x * SCALE + 6, y * SCALE - 6);
+      }
+    }
+
+    async function drawRobots() {
+      const robotRes = await fetch("/robots");
+      const robots = await robotRes.json();
+
+      const taskRes = await fetch("/tasks");
+      const tasks = await taskRes.json();
+
+      // Map task goals by robot ID
+      const taskMap = {};
+      tasks.forEach(task => {
+        if (!task.complete) {
+          taskMap[task.robot_id] = { x: task.target_x, y: task.target_y };
+        }
+      });
+
+      ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+      robots.forEach(robot => {
+        drawCircle(robot.start_x, robot.start_y, "green");
+        drawCircle(robot.current_x, robot.current_y, "blue", `${robot.name} (${robot.battery_level.toFixed(0)}%)`);
+        if (taskMap[robot.id]) {
+          drawCircle(taskMap[robot.id].x, taskMap[robot.id].y, "red", "goal");
+        }
+      });
+    }
+
+    drawRobots();
+    setInterval(drawRobots, 1000);
+  </script>
+</body>
+</html>
