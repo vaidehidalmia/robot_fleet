@@ -53,6 +53,7 @@ async def robot_movement_loop(context: SimulationContext):
                         continue
 
                     # Move toward task target
+                    robot.current_task_id = task.id
                     distance, new_x, new_y, arrived = move_toward(
                         robot.current_x, robot.current_y,
                         task.target_x, task.target_y
@@ -73,11 +74,13 @@ async def robot_movement_loop(context: SimulationContext):
                         if robot.battery_level >= 100.0:
                             robot.battery_level = 100.0
                             task.complete = True
+                            robot.current_task_id = None
                             robot.status = "idle"
                             print(f"{robot.name} fully charged (task {task.id}).")
 
                     elif task.task_type == "normal" and arrived:
                         task.complete = True
+                        robot.current_task_id = None
                         robot.status = "idle"
                         print(f"{robot.name} completed task {task.id}.")
 

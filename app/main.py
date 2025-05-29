@@ -12,7 +12,7 @@ from app import models
 from app import schemas
 from app.worker.controller import init_worker, stop_simulation_task
 
-# Base.metadata.drop_all(bind=engine)
+Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()

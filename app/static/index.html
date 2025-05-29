@@ -39,21 +39,27 @@
       const taskRes = await fetch("/tasks");
       const tasks = await taskRes.json();
 
-      // Map task goals by robot ID
       const taskMap = {};
       tasks.forEach(task => {
-        if (!task.complete) {
-          taskMap[task.robot_id] = { x: task.target_x, y: task.target_y };
-        }
+        taskMap[task.id] = { x: task.target_x, y: task.target_y };
       });
 
       ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
       robots.forEach(robot => {
         drawCircle(robot.start_x, robot.start_y, "green");
-        drawCircle(robot.current_x, robot.current_y, "blue", `${robot.name} (${robot.battery_level.toFixed(0)}%)`);
-        if (taskMap[robot.id]) {
-          drawCircle(taskMap[robot.id].x, taskMap[robot.id].y, "red", "goal");
+
+        drawCircle(
+          robot.current_x,
+          robot.current_y,
+          "blue",
+          `${robot.name} (${robot.battery_level.toFixed(0)}%)`
+        );
+
+        // ✅ Draw current task target only
+        if (robot.current_task_id && taskMap[robot.current_task_id]) {
+          const goal = taskMap[robot.current_task_id];
+          drawCircle(goal.x, goal.y, "red", "goal");
         }
       });
     }

@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 from datetime import datetime
 
 # --- Robot schemas ---
@@ -17,6 +18,7 @@ class Robot(RobotBase):
     id: int
     current_x: float
     current_y: float
+    current_task_id: Optional[int]
     battery_level: float
     class Config:
         from_attributes = True
